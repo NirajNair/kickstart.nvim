@@ -83,6 +83,8 @@ I hope you enjoy your Neovim journey,
 
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
+--
+--------------------------------------------KEYMAPS-----------------------------------------------------
 
 -- Set <space> as the leader key
 -- See `:help mapleader`
@@ -91,7 +93,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -229,6 +231,12 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
   callback = function() vim.hl.on_yank() end,
 })
+
+vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
+
+vim.keymap.set('i', 'jj', '<ESC>', { desc = 'Exit insert mode' })
+
+--------------------------------------------KEYMAPS-----------------------------------------------------
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
@@ -760,7 +768,9 @@ require('lazy').setup({
         -- <c-k>: Toggle signature help
         --
         -- See :h blink-cmp-config-keymap for defining your own keymap
-        preset = 'default',
+        preset = 'enter',
+        ['<Tab>'] = { 'select_next', 'fallback' },
+        ['<S-Tab>'] = { 'select_prev', 'fallback' },
 
         -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
         --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
@@ -798,25 +808,40 @@ require('lazy').setup({
     },
   },
 
-  { -- You can easily change to a different colorscheme.
-    -- Change the name of the colorscheme plugin below, and then
-    -- change the command in the config to whatever the name of that colorscheme is.
-    --
-    -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'folke/tokyonight.nvim',
-    priority = 1000, -- Make sure to load this before all the other start plugins.
+  -- { -- You can easily change to a different colorscheme.
+  --   -- Change the name of the colorscheme plugin below, and then
+  --   -- change the command in the config to whatever the name of that colorscheme is.
+  --   --
+  --   -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
+  --   'folke/tokyonight.nvim',
+  --   priority = 1000, -- Make sure to load this before all the other start plugins.
+  --   config = function()
+  --     ---@diagnostic disable-next-line: missing-fields
+  --     require('tokyonight').setup {
+  --       styles = {
+  --         comments = { italic = true }, -- Disable italics in comments
+  --       },
+  --     }
+  --
+  --     -- Load the colorscheme here.
+  --     -- Like many other themes, this one has different styles, and you could load
+  --     -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
+  --     vim.cmd.colorscheme 'tokyonight-moon'
+  --   end,
+  -- },
+
+  {
+    'rose-pine/neovim',
+    priority = 1000, -- Ensure it loads first
     config = function()
-      ---@diagnostic disable-next-line: missing-fields
-      require('tokyonight').setup {
+      require('rose-pine').setup {
         styles = {
-          comments = { italic = false }, -- Disable italics in comments
+          italic = false,
+          -- transparency = true,
         },
       }
 
-      -- Load the colorscheme here.
-      -- Like many other themes, this one has different styles, and you could load
-      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      vim.cmd.colorscheme 'rose-pine'
     end,
   },
 
@@ -917,6 +942,66 @@ require('lazy').setup({
           end
         end,
       })
+    end,
+  },
+
+  {
+    'stevearc/oil.nvim',
+    ---@module 'oil'
+    ---@type oil.SetupOpts
+    opts = {},
+    -- Optional dependencies
+    dependencies = { { 'nvim-mini/mini.icons', opts = {} } },
+    -- dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if you prefer nvim-web-devicons
+    -- Lazy loading is not recommended because it is very tricky to make it work correctly in all situations.
+    lazy = false,
+  },
+
+  {
+    'windwp/nvim-autopairs',
+    event = 'InsertEnter',
+    config = true,
+  },
+
+  {
+    'ThePrimeagen/harpoon',
+    branch = 'harpoon2',
+    lazy = false,
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    config = function()
+      local harpoon = require 'harpoon'
+
+      harpoon:setup()
+
+      local set = vim.keymap.set
+
+      set('n', '<leader>A', function() harpoon:list():prepend() end, { desc = 'Prepend to Harpoon list' })
+      set('n', '<leader>a', function() harpoon:list():add() end, { desc = 'Append to Harpoon list' })
+      set('n', '<C-e>', function() harpoon.ui:toggle_quick_menu(harpoon:list()) end, { desc = 'Toggle sHarpoon list' })
+
+      -- switch to harpooned file 1-4
+      set('n', '<leader>q', function() harpoon:list():select(1) end, { desc = 'Switch to file at position 1' })
+      set('n', '<leader>w', function() harpoon:list():select(2) end, { desc = 'Switch to file at position 2' })
+      set('n', '<leader>e', function() harpoon:list():select(3) end, { desc = 'Switch to file at position 3' })
+      set('n', '<leader>r', function() harpoon:list():select(4) end, { desc = 'Switch to file at position 4' })
+      set('n', '<leader>u', function() harpoon:list():select(5) end, { desc = 'Switch to file at position 5' })
+      set('n', '<leader>i', function() harpoon:list():select(6) end, { desc = 'Switch to file at position 6' })
+      set('n', '<leader>o', function() harpoon:list():select(7) end, { desc = 'Switch to file at position 7' })
+      set('n', '<leader>p', function() harpoon:list():select(8) end, { desc = 'Switch to file at position 8' })
+
+      -- susbstitute harpoon file 1-4 with new files
+      set('n', '<leader><C-q>', function() harpoon:list():replace_at(1) end, { desc = 'Substitute file at position 1' })
+      set('n', '<leader><C-w>', function() harpoon:list():replace_at(2) end, { desc = 'Substitute file at position 2' })
+      set('n', '<leader><C-e>', function() harpoon:list():replace_at(3) end, { desc = 'Substitute file at position 3' })
+      set('n', '<leader><C-r>', function() harpoon:list():replace_at(4) end, { desc = 'Substitute file at position 4' })
+      set('n', '<leader><C-u>', function() harpoon:list():replace_at(5) end, { desc = 'Substitute file at position 5' })
+      set('n', '<leader><C-i>', function() harpoon:list():replace_at(6) end, { desc = 'Substitute file at position 6' })
+      set('n', '<leader><C-o>', function() harpoon:list():replace_at(7) end, { desc = 'Substitute file at position 7' })
+      set('n', '<leader><C-p>', function() harpoon:list():replace_at(8) end, { desc = 'Substitute file at position 8' })
+
+      -- toggle previous & next buffers stored within Harpoon list
+      set('n', '<leader>n', function() harpoon:list():prev() end, { desc = 'Move to Next file in Harpoon' })
+      set('n', '<leader>N', function() harpoon:list():next() end, { desc = 'Move to Prev file in Harpoon' })
     end,
   },
 
