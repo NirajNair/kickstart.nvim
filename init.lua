@@ -249,6 +249,13 @@ vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv", { desc = 'Move highlighted line one
 
 vim.keymap.set('n', '<leader>qf', ':close', { desc = 'Close quickfix list' })
 
+-- Enable file autoreload
+vim.o.autoread = true
+vim.api.nvim_create_autocmd({ 'BufEnter', 'CursorHold', 'CursorHoldI', 'FocusGained' }, {
+  command = "if mode() != 'c' | checktime | endif",
+  pattern = { '*' },
+})
+
 --------------------------------------------KEYMAPS-----------------------------------------------------
 
 -- [[ Install `lazy.nvim` plugin manager ]]
