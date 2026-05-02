@@ -4,7 +4,6 @@
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
-
 -- Diagnostic Config & Keymaps
 -- See :help vim.diagnostic.Opts
 vim.diagnostic.config {
@@ -20,8 +19,6 @@ vim.diagnostic.config {
   -- Auto open the float, so you can easily read the errors when jumping with `[d` and `]d`
   jump = { float = true },
 }
-
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -60,5 +57,10 @@ vim.keymap.set('i', 'jj', '<ESC>', { desc = 'Exit insert mode' })
 vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv", { desc = 'Move highlighted line one line below' })
 vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv", { desc = 'Move highlighted line one line above' })
 
-vim.keymap.set('n', '<leader>qf', ':cclose<CR>', { desc = 'Close quickfix list' })
+vim.keymap.set('n', '<leader>qq', ':lclose<CR>:cclose<CR>', { desc = 'Close loclist/quickfix' })
+vim.keymap.set('n', '<leader>qf', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+vim.keymap.set('n', '<leader>dd', vim.diagnostic.open_float, { desc = 'Open floating [D]iagnostic message' })
 
+-- Keymaps for viewing diff
+-- This opens a terminal buffer. Exit it using :q
+vim.keymap.set('n', '<leader>di', ':terminal git diff<CR>', { desc = 'Opens a terminal buffer with [DI]ff' })
