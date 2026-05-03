@@ -172,6 +172,9 @@ vim.o.confirm = true
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 
+vim.g.lazygit_floating_window_winblend = 0 -- Optional: makes it opaque
+vim.g.lazygit_floating_window_scaling_factor = 1.0
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
